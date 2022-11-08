@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -23,6 +23,7 @@ async function run() {
     const serviceCollaction = client
       .db("deliveryService")
       .collection("services");
+    const reviewCollaction = client.db("deliveryService").collection("reviews");
     // insert service
     app.post("/services", async (req, res) => {
       const service = req.body;
@@ -41,6 +42,19 @@ async function run() {
       const query = {};
       const curson = serviceCollaction.find(query);
       const result = await curson.toArray();
+      res.send(result);
+    });
+    // get single service
+    app.get("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const service = await serviceCollaction.findOne(query);
+      res.send(service);
+    });
+    // insert review in database
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollaction.insertOne(review);
       res.send(result);
     });
   } finally {
