@@ -65,8 +65,39 @@ async function run() {
           productId: req.query.productId,
         };
       }
+      if (req.query.email) {
+        query = {
+          email: req.query.email,
+        };
+      }
       const cursor = reviewCollaction.find(query).sort({ _id: -1 });
       const result = await cursor.toArray();
+      res.send(result);
+    });
+    // delete review
+    app.delete("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewCollaction.deleteOne(query);
+      res.send(result);
+    });
+    // review update
+    app.put("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const reviews = req.body;
+
+      const docUpdate = {
+        $set: {
+          review: reviews.review,
+        },
+      };
+      const result = await reviewCollaction.updateOne(
+        query,
+        docUpdate,
+        options
+      );
       res.send(result);
     });
   } finally {
