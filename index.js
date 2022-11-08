@@ -11,11 +11,28 @@ app.use(express.json());
 // mongodb start
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.newitlb.mongodb.net/?retryWrites=true&w=majority`;
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+
+async function run() {
+  try {
+    const serviceCollaction = client
+      .db("deliveryService")
+      .collection("services");
+    // insert service
+    app.post("/services", async (req, res) => {
+      const service = req.body;
+      const result = await serviceCollaction.insertOne(service);
+      res.send(result);
+    });
+  } finally {
+  }
+}
+run().catch((error) => console.error(error));
 
 // mongodb end
 
