@@ -57,6 +57,18 @@ async function run() {
       const result = await reviewCollaction.insertOne(review);
       res.send(result);
     });
+    // get service review
+    app.get("/reviews", async (req, res) => {
+      let query = {};
+      if (req.query.productId) {
+        query = {
+          productId: req.query.productId,
+        };
+      }
+      const cursor = reviewCollaction.find(query).sort({ _id: -1 });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
