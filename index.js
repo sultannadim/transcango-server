@@ -29,6 +29,13 @@ async function run() {
       const result = await serviceCollaction.insertOne(service);
       res.send(result);
     });
+    // limit service find
+    app.get("/service-limit", async (req, res) => {
+      const query = {};
+      const cursor = serviceCollaction.find(query).limit(3);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
